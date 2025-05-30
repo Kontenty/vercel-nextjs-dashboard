@@ -32,10 +32,12 @@ export const createInvoice = async (prevState: any, formData: FormData) => {
       VALUES (${customerId}, ${amountInCents}, ${status}, ${isoDate})
       `;
     revalidatePath("/dashboard/invoices");
+    redirect("/dashboard/invoices");
   } catch (error) {
+    if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+      throw error; // Let Next.js handle the redirect
+    }
     console.log(`Exception while updating db: ${error}`);
     return { message: "Db failed" };
-  } finally {
-    redirect("/dashboard/invoices");
   }
 };
